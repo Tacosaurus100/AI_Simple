@@ -1,8 +1,8 @@
 #ifndef LAYER_FUNCTIONS
 #define LAYER_FUNCTIONS
 
-#include <artificialIntelligence/functions/layerFunctions.hpp>
 #include <coreutils/classes/matrixes/Matrix3D.cpp>
+#include <artificialIntelligence/functions/layerFunctions.hpp>
 #include <artificialIntelligence/classes/BasicLayerList.cpp>
 #include <artificialIntelligence/functions/activationFunctions.cpp>
 
@@ -18,7 +18,7 @@ namespace artificialIntelligence {
          void layerToLayerForward (
                               Matrix3D<T>* firstLayer, 
                               Matrix3D<T>* secondLayer,
-                              BasicLayerList<Matrix3D<T>>* secondLayerWeights,
+                              BasicLayerList<T>* secondLayerWeights,
                               Matrix3D<T>* secondLayerBias) 
          {
             // go through the second layer
@@ -64,8 +64,14 @@ namespace artificialIntelligence {
          }
 
          template <typename T>
-         BasicLayerList<Matrix3D<T>>* newWeight (BasicLayerList<T>* firstLayer, BasicLayerList<Matrix3D<T>>* secondLayer) {
-            return new BasicLayerList<Matrix3D<T>> ();
+         Basic3DWeightList<T>* newWeight (BasicLayer<T>* firstLayer, BasicLayer<T>* secondLayer) {
+            return new Basic3DWeightList<T> (
+               firstLayer->getLayerMatrix()->getLength(), 
+               firstLayer->getLayerMatrix()->getWidth(),
+               firstLayer->getLayerMatrix()->getHeight(),
+               secondLayer->getLayerMatrix()->getLength(),
+               secondLayer->getLayerMatrix()->getWidth(),
+               secondLayer->getLayerMatrix()->getHeight());
          }
       }
    }

@@ -4,8 +4,11 @@
 #include <iostream>
 
 #include <coreutils/classes/matrixes/Matrix3D.cpp>
+#include <artificialIntelligence/classes/BasicLayer.hpp>
+#include <artificialIntelligence/classes/Basic3DWeightList.hpp>
 
 using namespace coreutils::classes::matrixes;
+using namespace artificialIntelligence::classes;
 
 namespace artificialIntelligence {
    namespace classes {
@@ -13,36 +16,18 @@ namespace artificialIntelligence {
       template <typename T>
       class BasicLayerList {
          public:
-            BasicLayerList (Matrix3D<T>* layer, BasicLayerList<Matrix3D<T>>* weights = nullptr);
+            BasicLayerList (Matrix3D<T>* layer, Matrix3D<T>* biasMatrix = nullptr, Basic3DWeightList<T>* weights = nullptr);
             
             BasicLayerList ();
 
-            void printList ();
+            void printList (bool printWeights = false);
 
-            void add (Matrix3D<T>* layer, BasicLayerList<Matrix3D<T>>* weights = nullptr);
+            void add (Matrix3D<T>* layer, Matrix3D<T>* biasMatrix = nullptr, Basic3DWeightList<T>* weights = nullptr);
 
             void addNew (int length, int width, int height);
 
-            class BasicLayer{
-               private:
-                  Matrix3D<T>* layer;
-                  BasicLayerList<Matrix3D<T>>* weights;
-                  BasicLayer* next;
-
-               public:
-                  BasicLayer (Matrix3D<T>* layer, BasicLayerList<Matrix3D<T>>* weights);
-
-                  BasicLayer ();
-
-                  int print (int depth, bool printWeights);
-
-                  void add (Matrix3D<T>* layer, BasicLayerList<Matrix3D<T>>* weights = nullptr);
-
-                  Matrix3D<T>* getLayer ();
-            };
-
          private:
-            BasicLayer* root;
+            BasicLayer<T>* root;
 
       };
    }

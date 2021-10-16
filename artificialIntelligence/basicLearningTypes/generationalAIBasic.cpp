@@ -7,10 +7,13 @@
 #include <coreutils/functions/sort/sortHelpers.cpp>
 #include <coreutils/functions/debug/print.cpp>
 
-#include <artificialIntelligence/classes/BasicLayerList.cpp>
+
+#include <artificialIntelligence/functions/layerFunctions.cpp>
 #include <artificialIntelligence/functions/activationFunctions.cpp>
 #include <artificialIntelligence/functions/backPropagationFunctions.cpp>
-#include <artificialIntelligence/functions/layerFunctions.cpp>
+
+#include <artificialIntelligence/classes/BasicLayerList.cpp>
+#include <artificialIntelligence/classes/Basic3DWeightList.cpp>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -28,75 +31,24 @@ namespace artificialIntelligence {
       namespace generationalAIBasic {
          static void run (int epochs, double learningRate, Matrix3D<float>* inputLayer, Matrix3D<float>* outputLayerData, int inputCount, int hiddenLayerCount) {
 
+            // making hidden layers with only 2 nodes
             const int hiddenLayerLength = 1;
             const int hiddenLayerWidth = 2;
             const int hiddenLayerHeight = 1;
 
             BasicLayerList<float>* list = new artificialIntelligence::classes::BasicLayerList<float> ();
 
-            // making hidden layers with only 2 nodes
-
-            Matrix3D<float>* hiddenLayers = new Matrix3D<float> [hiddenLayerCount]; 
+            list->add (inputLayer);
             for (int i = 0; i < hiddenLayerCount; i++) {
                list->addNew (hiddenLayerLength, hiddenLayerWidth, hiddenLayerHeight);
             }
-            list->printList();
+            list->printList(true);
+
             exit (0);
             // row:     0  1  2  3  4
             // input:   0  1  2  3  4
             // weights: 00000 11111 22222 33333 44444
             // output:  1  2  3  4  5
-
-            // a hiddenLayerWeight is a 3D Matrix filled with 3D Matrixes. the first one gets the location, 
-            // the inside gets the weights for each output
-            // needs to be the size of the first layer
-            // Matrix3D<Matrix3D<float>>* hiddenLayerWeights = new Matrix3D<Matrix3D<float>> [hiddenLayerCount]; 
-
-            // // the one for the input layer
-            // hiddenLayerWeights[0] = Matrix3D<Matrix3D<float>> (inputLayer->getLength(), inputLayer->getWidth(), inputLayer->getHeight());
-
-            // for (int fl = 0; fl < inputLayer->getLength(); fl++) {
-            //    for (int fw = 0; fw < inputLayer->getWidth(); fw++) {
-            //       for (int fh = 0; fh < inputLayer->getHeight(); fh++) {
-            //          hiddenLayerWeights[0].insert(Matrix3D<float> (hiddenLayerLength, hiddenLayerWidth, hiddenLayerHeight), fl, fw, fh);
-            //          hiddenLayerWeights[0].getData(fl, fw, fh).randomize();
-            //          // std::cout << "here" <<inputLayer->getLength() << " w" << inputLayer->getWidth() << "h" << inputLayer->getHeight() <<'\n';
-            //       }
-            //    }
-            // }
-            // // exit (0);
-            // // makes and then randomizes the numbers for the hidden layers
-            // for (int i = 1; i < hiddenLayerCount; i++) {
-            //    hiddenLayerWeights[i] = Matrix3D<Matrix3D<float>> (hiddenLayerLength, hiddenLayerWidth, hiddenLayerHeight);
-            //    for (int fl = 0; fl < hiddenLayerLength; fl++) {
-            //       for (int fw = 0; fw < hiddenLayerWidth; fw++) {
-            //          for (int fh = 0; fh < hiddenLayerHeight; fh++) {
-            //             hiddenLayerWeights[i].insert(Matrix3D<float> (hiddenLayerLength, hiddenLayerWidth, hiddenLayerHeight), fl, fw, fh);
-            //             hiddenLayerWeights[i].getData(fl, fw, fh).randomize();
-            //          }
-            //       }
-            //    }
-            // }
-
-            // // needs to be the size of the first layer
-            // // hiddenLayerWeights[hiddenLayerCount - 1] = Matrix3D<Matrix3D<float>> (hiddenLayerLength, hiddenLayerWidth, hiddenLayerHeight);
-            
-            // for (int fl = 0; fl < hiddenLayerLength; fl++) {
-            //    for (int fw = 0; fw < hiddenLayerWidth; fw++) {
-            //       for (int fh = 0; fh < hiddenLayerHeight; fh++) {
-            //          hiddenLayerWeights[hiddenLayerCount - 1].insert(Matrix3D<float> (outputLayerData->getLength(), outputLayerData->getWidth(), outputLayerData->getHeight()), fl, fw, fh);
-            //          hiddenLayerWeights[hiddenLayerCount - 1].getData(fl, fw, fh).randomize();
-            //       }
-            //    }
-            // }
-
-            // // makes the hidden layer biases
-            // Matrix3D<float>* hiddenLayerBias = new Matrix3D<float> [hiddenLayerCount]; 
-            // for (int i = 0; i < hiddenLayerCount; i++) {
-            //    hiddenLayerBias[i] = Matrix3D<float> (hiddenLayerLength,hiddenLayerWidth,hiddenLayerHeight);
-            //    hiddenLayerBias[i].randomize();
-            // }
-
 
             // // makes the output layer bias and weights
             // hiddenLayerBias[hiddenLayerCount - 1] = Matrix3D<float> (outputLayerData->getLength(), outputLayerData->getWidth(), outputLayerData->getHeight());
@@ -114,12 +66,20 @@ namespace artificialIntelligence {
             // }
             
             // // main loop
-            // for (int e = 0; e < epochs; e++) {
-            //    // because stochastic gradient descent, the order needs randomization
-            //    int* order = inputLayer->shuffleGroups();
-            //    outputLayerData->shuffleGroups (order);
 
-            //    // change the first hidden layer
+            // each run needs to test every input and output
+            // starts by shuffling
+            // then calculates delta for output
+            // then calculates delta for hidden
+            // then calculates delta for input
+            // then backpropagates
+            for (int e = 0; e < epochs; e++) {
+            //    // because stochastic gradient descent, the order needs randomization
+               int* order = inputLayer->shuffleGroups();
+               outputLayerData->shuffleGroups (order);
+
+
+               // change the first hidden layer
             //    //for (int i = 0; i < inputLayer->getLength(); i++) {
             //    for (int i = 0; i < inputCount; i++) {
             //       // hiddenLayers[0].printMatrix();
@@ -172,25 +132,7 @@ namespace artificialIntelligence {
                
             //    // exit (0);
             //    // change the output layer
-            // }
-            
-            // for (int i = 0; i < hiddenLayerCount; i++) {
-            //    for (int fl = 0; fl < hiddenLayerLength; fl++) {
-            //       for (int fw = 0; fw < hiddenLayerWidth; fw++) {
-            //          for (int fh = 0; fh < hiddenLayerHeight; fh++) {
-            //             cout << "Hidden Weight #" << i << '\n';
-            //             hiddenLayerWeights[i].getData(fl, fw, fh).printMatrix();
-            //          }
-            //       }
-            //    }
-            //    cout << "Hidden Bias #" << i << '\n';
-            //    hiddenLayerBias[i].printMatrix();
-            // }
-            // for (int i = 0; i < inputCount; i++) {
-            //    cout << "Output #" << i << '\n';
-            //    outputLayers[i].printMatrix();
-            // }
-            // exit (0);
+            }
          }
       }
    }
