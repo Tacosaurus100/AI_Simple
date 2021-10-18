@@ -78,7 +78,7 @@ int BasicWeight<T>::print (int length, int width, int height) {
 }
 
 template <typename T>
-BasicWeight<T>* BasicWeight<T>::add (int length, int width, int height, Matrix3D<T>* weights) {
+void BasicWeight<T>::add (int length, int width, int height, Matrix3D<T>* weights) {
    if (length == 0) {
       if (width == 0) {
          if (height == 0){
@@ -98,11 +98,10 @@ BasicWeight<T>* BasicWeight<T>::add (int length, int width, int height, Matrix3D
    // } else {
    //    this->root = this->root->add(layer, weights);
    // }
-   return new BasicWeight<T>();
 }
 
 template <typename T>
-BasicWeight<T>* BasicWeight<T>::addNew (int length, int width, int height) {
+void BasicWeight<T>::addNew (int length, int width, int height) {
    Matrix3D<T>* layer = new Matrix3D<T> (length, width, height);
    layer->randomize ();
    return this->add (length, width, height, weights);
@@ -133,15 +132,15 @@ Matrix3D<T>* BasicWeight<T>::getWeightMatrix (int length, int width, int height)
    if (length == 0) {
       if (width == 0) {
          if (height == 0){
-            return this->getWeight ();
+            return this->getWeightMatrix ();
          } else {
-            return this->down->getWeight (length, width, height - 1);
+            return this->down->getWeightMatrix (length, width, height - 1);
          }
       } else {
-         return this->back->getWeight (length, width - 1, height);
+         return this->back->getWeightMatrix (length, width - 1, height);
       }
    } else {
-      return this->right->getWeight (length - 1, width, height);
+      return this->right->getWeightMatrix (length - 1, width, height);
    }
 }
 

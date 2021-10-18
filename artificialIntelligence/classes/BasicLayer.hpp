@@ -17,6 +17,7 @@ namespace artificialIntelligence {
             Matrix3D<T>* biasMatrix;
             Basic3DWeightList<T>* weights;
             BasicLayer* next;
+            BasicLayer* prev;
 
          public:
             BasicLayer (Matrix3D<T>* layerMatrix, Matrix3D<T>* biasMatrix = nullptr, Basic3DWeightList<T>* weights = nullptr);
@@ -25,13 +26,33 @@ namespace artificialIntelligence {
 
             BasicLayer ();
 
-            int print (int depth, bool printWeights = false, bool printBias = false);
+            int print (bool printBias = false, bool printWeights = false, int depth = 1);
 
             BasicLayer<T>* add (Matrix3D<T>* layer, Matrix3D<T>* biasMatrix = nullptr, Basic3DWeightList<T>* weights = nullptr);
 
+            void calculateAndUpdateAll ();
+
+            void calculateAndUpdateSingle ();
+
+            void setPrev (BasicLayer<T>* prev);
+
             Matrix3D<T>* getLayerMatrix ();
 
-            Matrix3D<T>* setWeights (BasicWeight<T> weights);
+            void setLayerMatrix (Matrix3D<T>* layerMatrix);
+
+            Matrix3D<T>* getWeights (int length, int width, int height);
+
+            // void setWeights (BasicWeight<T> weights);
+
+            Matrix3D<T>* getBias ();
+
+            void setBiasMatrix (Matrix3D<T>* bias);
+
+            BasicLayer<T>* getLast ();
+
+            BasicLayer<T>* getNext ();
+
+            BasicLayer<T>* getPrev ();
       };
    }
 }

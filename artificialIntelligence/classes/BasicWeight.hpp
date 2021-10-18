@@ -22,9 +22,9 @@ namespace artificialIntelligence {
 
             void print ();
 
-            BasicWeight<T>* add (int length, int width, int height, Matrix3D<T>* weights = nullptr);
+            void add (int length, int width, int height, Matrix3D<T>* weights = nullptr);
 
-            BasicWeight<T>* addNew (int length, int width, int height);
+            void addNew (int length, int width, int height);
 
             Matrix3D<T>* getWeightMatrix (int length, int width, int height);
 

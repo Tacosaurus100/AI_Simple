@@ -16,17 +16,21 @@ using namespace artificialIntelligence::classes;
 template <typename T>
 BasicLayerList<T>::BasicLayerList (Matrix3D<T>* layer, Matrix3D<T>* biasMatrix, Basic3DWeightList<T>* weights){
    this->root = new BasicLayer<T> (layer, biasMatrix, weights);
+   this->last = this->root;
 }
 
 template <typename T>
 BasicLayerList<T>::BasicLayerList () {
    this->root = nullptr;
+   this->last = nullptr;
 }
 
 template <typename T>
-void BasicLayerList<T>::printList (bool printWeights) {
-   int depth = this->root->print(1, printWeights);
-   std::cout << "There are " << depth << " total layers\n";
+void BasicLayerList<T>::printList (bool printBias, bool printWeights) {
+   if (this->root != nullptr) {
+      int depth = this->root->print(printBias, printWeights);
+      std::cout << "There are " << depth << " total layers\n";
+   }
 }
 
 template <typename T>
@@ -36,6 +40,22 @@ void BasicLayerList<T>::add (Matrix3D<T>* layerMatrix, Matrix3D<T>* biasMatrix, 
    } else {
       this->root = this->root->add(layerMatrix, biasMatrix, weights);
    }
+   this->last = this->root->getLast();
+}
+
+template <typename T>
+void BasicLayerList<T>::editRootMatrix (Matrix3D<T>* newMatrix) {
+   this->root->setLayerMatrix(newMatrix);
+}
+
+template <typename T>
+void BasicLayerList<T>::calculateAndUpdateAll () {
+   this->root->calculateAndUpdateAll();
+}
+
+template <typename T>
+void BasicLayerList<T>::calculateAndUpdateLast () {
+   this->last->getPrev()->calculateAndUpdateAll();
 }
 
 template <typename T>
@@ -49,6 +69,17 @@ void BasicLayerList<T>::addNew (int length, int width, int height) {
    } else {
       this->root->add(layerMatrix, biasMatrix);
    }
+   this->last = this->root->getLast();
+}
+
+template <typename T>
+BasicLayer<T>* BasicLayerList<T>::getRoot () {
+   return this->root;
+}
+
+template <typename T>
+BasicLayer<T>* BasicLayerList<T>::getLast () {
+   return this->last;
 }
 
 
