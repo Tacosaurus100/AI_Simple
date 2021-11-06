@@ -15,19 +15,19 @@ int main () {
 
    //int epochs, int learningRate, Matrix3D<double> firstMatrix, int hiddenLayers, int** hiddenLayerCount, string inputData, string outputData) {
 
-   int epochs = 100000;
+   int epochs = 1000000;
    double learningRate = 0.05;
 
    // needs to be at least two 
-   int layerCount = 5;
+   int layerCount = 4;
 
    // get the file from the location
    string* currentPath = new string (filesystem::current_path());
-   *currentPath += "/../artificialIntelligence/neuralNetworks";
+   *currentPath += "/../../artificialIntelligence/neuralNetworks";
    filesystem::current_path(filesystem::path(*currentPath));
    string inputData = filesystem::current_path();
    delete currentPath;
-   inputData += "/../data/multsub1data.txt";
+   inputData += "/../data/xor/xorInputData.txt";
    
    fstream inputs;
    inputs.open(inputData, ios::in);

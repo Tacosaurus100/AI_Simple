@@ -1,6 +1,6 @@
 # Makefile
 CC=g++
-CFLAGS=-Og -I ../ -std=c++2a
+CFLAGS=-O2 -I ../../ -std=c++2a -ferror-limit=100
 
 all: xormake
 
@@ -13,6 +13,6 @@ _OBJ = xor.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 xormake: 
-	$(CC) -o $@ ../artificialIntelligence/neuralNetworks/xor.cpp $(CFLAGS)
+	$(CC) -o $@ ../../artificialIntelligence/neuralNetworks/xor.cpp $(CFLAGS)
 
 .PHONY: clean

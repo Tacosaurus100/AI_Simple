@@ -255,21 +255,15 @@ namespace coreutils {
                   }
                }
 
-               // Matrix3D (int length, int width, int height) {
-               //    this->length = length;
-               //    this->width = width;
-               //    this->height = height;
-               //    // this->arr = new T [length][width][height];
-               //    T*** l = new T** [length];
-               //    for (int i = 0; i < length; i++) {
-               //       l[i] = new T* [width];
-               //       for (int j = 0; j < width; j++) {
-               //          l[i][j] = new T [height];
-               //       }
-               //    }
-
-               //    this->arr = l;
-               // }
+               Matrix3D findAndMakeMatrix (std::ifstream in) {
+                  std::string line;
+                  int length = 0;
+                  int width = 0;
+                  int height = 0;
+                  while (getline (in, line)) {
+                     // if ()
+                  }
+               }
 
                Matrix3D (const int length, const int width, const int height) {
                   // std::cout << "Constructor\n";

@@ -33,9 +33,9 @@ namespace artificialIntelligence {
          static void run (int epochs, double learningRate, Matrix3D<float>** inputDataMatrixes, Matrix3D<float>** outputDataMatrixes, int inputCount, int hiddenLayerCount) {
 
             // making hidden layers with only 2 nodes
-            const int hiddenLayerLength = 3;
-            const int hiddenLayerWidth = 3;
-            const int hiddenLayerHeight = 3;
+            const int hiddenLayerLength = 1;
+            const int hiddenLayerWidth = 1;
+            const int hiddenLayerHeight = 2;
 
             learningRate = learningRate;
 
