@@ -37,11 +37,12 @@ namespace coreutils {
                   return this->height;
                }
 
-               T getData (int length, int width, int height) {
+               T* getData (int length, int width, int height) {
                   if (this->length <= length || this->width <= width || this->height <= height) {
                      std::cout << "Invalid input at getData";
+                     return nullptr;
                   }
-                  return this->arr[length][width][height];
+                  return &this->arr[length][width][height];
                }
 
                // shuffles every single value
@@ -176,21 +177,37 @@ namespace coreutils {
                   return M3D;
                }
 
-               void randomize () {
+               Matrix3D<T>* operator / (const Matrix3D<T>* m2) {
+                  Matrix3D<T>* M3D = new Matrix3D<T> (this->length, this->width, this->height);
+
+                  for (int i = 0; i < length; i++) {
+                     for (int j = 0; j < width; j++) {
+                        for (int k = 0; k < height; k++) {
+                           M3D->arr[i][j][k] = this->arr [i][j][k] / m2->arr [i][j][k];
+                        }
+                     }
+                  }
+                  
+                  return M3D;
+               }
+
+               void randomize (double lowerBound = -0.5, double upperBound = 0.5) {
                   // RNG stuff that i dont understand
                   std::mt19937_64 rng;
                   uint64_t timeSeed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
                   std::seed_seq ss{uint32_t(timeSeed & 0xffffffff), uint32_t(timeSeed>>32)};
                   rng.seed(ss);
-                  std::uniform_real_distribution<double> unif(-1, 1);
-
+                  std::uniform_real_distribution<double> unif(lowerBound, upperBound);
+                  std::uniform_real_distribution<double> unif2(-1, 1);
                   // input the rng values into array
                   double currentRandomNumber;
                   for (int i = 0; i < this->length; i++) {
                      for (int j = 0; j < this->width; j++) {
                         for (int k = 0; k < this->height; k++) {
                            currentRandomNumber = unif(rng);
+                           // currentRandomNumber *= unif2(rng) > 0 ? 1 : - 1;
                            this->arr [i][j][k] = currentRandomNumber;
+                           // this->arr [i][j][k] = 0;
                         }
                      }
                   }
@@ -249,7 +266,7 @@ namespace coreutils {
                   for (int i = 0; i < length; i++) {
                      for (int j = 0; j < width; j++) {
                         for (int k = 0; k < height; k++) {
-                           this->insert(M3D->getData(i, j, k), i, j, k);
+                           this->insert(*M3D->getData(i, j, k), i, j, k);
                         }
                      }
                   }

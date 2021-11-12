@@ -10,7 +10,7 @@ namespace artificialIntelligence {
    namespace functions {
       namespace images {
          namespace generate {
-            Matrix3D<float>* inputMatrix (std::string filepath);
+            Matrix3D<float>* inputMatrixNormalized (std::string filepath, std::string type = "RGBA");
          }
       }
    }

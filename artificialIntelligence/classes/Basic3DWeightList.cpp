@@ -34,7 +34,7 @@ Matrix3D<T>* Basic3DWeightList<T>::getWeightMatrix (int length, int width, int h
 // puts weights in a specific spot. They can not be put in without a spot
 template <typename T>
 void Basic3DWeightList<T>::insert (int length, int width, int height, Matrix3D<T> weights) {
-   return this->root->add (length, width, height, weights);
+   this->root = this->root->add (length, width, height, weights);
 }
 
 #endif

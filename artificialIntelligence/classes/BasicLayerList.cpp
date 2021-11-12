@@ -14,7 +14,7 @@ using namespace artificialIntelligence::functions::layer;
 using namespace artificialIntelligence::classes;
 
 template <typename T>
-BasicLayerList<T>::BasicLayerList (Matrix3D<T>* layer, Matrix3D<T>* biasMatrix, Basic3DWeightList<T>* weights){
+BasicLayerList<T>::BasicLayerList (Matrix3D<T>* layer, Matrix3D<T>* biasMatrix, BasicWeight<T>* weights){
    this->root = new BasicLayer<T> (layer, biasMatrix, weights);
    this->last = this->root;
 }
@@ -26,15 +26,17 @@ BasicLayerList<T>::BasicLayerList () {
 }
 
 template <typename T>
-void BasicLayerList<T>::printList (bool printBias, bool printWeights) {
+void BasicLayerList<T>::print (bool printBias, bool printWeights) {
    if (this->root != nullptr) {
       int depth = this->root->print(printBias, printWeights);
       std::cout << "There are " << depth << " total layers\n";
+   } else {
+      std::cout << "No root layer initialized!\n";
    }
 }
 
 template <typename T>
-void BasicLayerList<T>::add (Matrix3D<T>* layerMatrix, Matrix3D<T>* biasMatrix, Basic3DWeightList<T>* weights) {
+void BasicLayerList<T>::add (Matrix3D<T>* layerMatrix, Matrix3D<T>* biasMatrix, BasicWeight<T>* weights) {
    if (this->root == nullptr) {
       this->root = new BasicLayer<T> (layerMatrix, biasMatrix, weights);
    } else {
@@ -45,29 +47,50 @@ void BasicLayerList<T>::add (Matrix3D<T>* layerMatrix, Matrix3D<T>* biasMatrix, 
 
 template <typename T>
 void BasicLayerList<T>::editRootMatrix (Matrix3D<T>* newMatrix) {
-   this->root->setLayerMatrix(newMatrix);
+   if (this->root != nullptr) {
+      this->root->setLayerMatrix(newMatrix);
+   }
 }
 
 template <typename T>
 void BasicLayerList<T>::calculateAndUpdateAll () {
-   this->root->calculateAndUpdateAll();
+   if (this->root != nullptr) {
+      this->root->calculateAndUpdateAll();
+   } else {
+      std::cout << "No root layer initialized!\n";
+   }
 }
 
 template <typename T>
 void BasicLayerList<T>::calculateAndUpdateLast () {
-   this->last->getPrev()->calculateAndUpdateAll();
+   if (this->last != nullptr) {
+      this->last->getPrev()->calculateAndUpdateAll();
+   } else {
+      std::cout << "No last layer initialized!\n";
+   }
+}
+
+template <typename T>
+void BasicLayerList<T>::add (BasicLayer<T>* layer) {
+   if (this->last != nullptr) {
+      this->last = this->last->add(layer);
+   } else {
+      this->root = layer;
+      this->last = this->root;
+   }
 }
 
 template <typename T>
 void BasicLayerList<T>::addNew (int length, int width, int height) {
    Matrix3D<T>* layerMatrix = new Matrix3D<T> (length, width, height);
-   Matrix3D<T>* biasMatrix = new Matrix3D<T> (length, width, height);
    layerMatrix->randomize();
-   biasMatrix->randomize();
+
+   // Matrix3D<T>* biasMatrix = new Matrix3D<T> (length, width, height);
+   // biasMatrix->randomize();
    if (this->root == nullptr) {
-      this->root = new BasicLayer<T> (layerMatrix, biasMatrix);
+      this->root = new BasicLayer<T> (layerMatrix);
    } else {
-      this->root->add(layerMatrix, biasMatrix);
+      this->root->add(layerMatrix);
    }
    this->last = this->root->getLast();
 }
@@ -82,5 +105,23 @@ BasicLayer<T>* BasicLayerList<T>::getLast () {
    return this->last;
 }
 
+template <typename T>
+void BasicLayerList<T>::toFile (std::string filepath) {
+   ofstream outputFile;
+   outputFile.open (filepath);
+   this->root->toFile (&outputFile);
+   outputFile.close();
+}
+
+template <typename T>
+BasicLayerList<T>* BasicLayerList<T>::loadFromFile (std::string filepath) {
+   BasicLayerList<T>* list = new BasicLayerList<T>();
+   ifstream inputFile;
+   inputFile.open (filepath);
+   list->root = BasicLayer<float>::loadFromFile(&inputFile);
+   list->last = list->root->getLast();
+   inputFile.close();
+   return list;
+}
 
 #endif

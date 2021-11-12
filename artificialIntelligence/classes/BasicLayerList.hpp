@@ -16,13 +16,15 @@ namespace artificialIntelligence {
       template <typename T>
       class BasicLayerList {
          public:
-            BasicLayerList (Matrix3D<T>* layer, Matrix3D<T>* biasMatrix = nullptr, Basic3DWeightList<T>* weights = nullptr);
+            BasicLayerList (Matrix3D<T>* layer, Matrix3D<T>* biasMatrix = nullptr, BasicWeight<T>* weights = nullptr);
             
             BasicLayerList ();
 
-            void printList (bool printBias = false, bool printWeights = false);
+            void print (bool printBias = false, bool printWeights = false);
 
-            void add (Matrix3D<T>* layer, Matrix3D<T>* biasMatrix = nullptr, Basic3DWeightList<T>* weights = nullptr);
+            void add (BasicLayer<T>* layer);
+
+            void add (Matrix3D<T>* layer, Matrix3D<T>* biasMatrix = nullptr, BasicWeight<T>* weights = nullptr);
 
             void addNew (int length, int width, int height);
 
@@ -35,6 +37,10 @@ namespace artificialIntelligence {
             BasicLayer<T>* getRoot ();
 
             BasicLayer<T>* getLast ();
+
+            void toFile (std::string filepath);
+
+            static BasicLayerList<T>* loadFromFile (std::string filepath);
 
          private:
             BasicLayer<T>* root;

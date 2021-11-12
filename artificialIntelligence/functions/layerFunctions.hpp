@@ -3,7 +3,7 @@
 
 #include <coreutils/classes/matrixes/Matrix3D.cpp>
 #include <artificialIntelligence/classes/BasicLayerList.hpp>
-#include <artificialIntelligence/classes/Basic3DWeightList.hpp>
+#include <artificialIntelligence/classes/BasicWeight.hpp>
 #include <artificialIntelligence/functions/activationFunctions.cpp>
 
 using namespace coreutils::classes::matrixes;
@@ -21,7 +21,7 @@ namespace artificialIntelligence {
          Matrix3D<T>* newLayer (int length, int width, int height);
 
          template <typename T>
-         Basic3DWeightList<T>* newWeight (BasicLayer<T>* firstLayer, BasicLayer<T>* secondLayer);
+         BasicWeight<T>* newWeight (BasicLayer<T>* firstLayer, BasicLayer<T>* secondLayer);
       }
    }
 }

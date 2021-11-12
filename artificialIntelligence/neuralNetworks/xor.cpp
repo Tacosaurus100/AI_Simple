@@ -4,6 +4,7 @@
 #include <coreutils/functions/procedural/stringFunctions.cpp>
 
 #include <artificialIntelligence/basicLearningTypes/generationalAIBasic.cpp>
+#include <artificialIntelligence/basicLearningTypes/testGenerationalAIBasic.cpp>
 #include <sys/time.h>
 #include <sys/resource.h>
 
@@ -15,10 +16,13 @@ int main () {
 
    //int epochs, int learningRate, Matrix3D<double> firstMatrix, int hiddenLayers, int** hiddenLayerCount, string inputData, string outputData) {
 
-   int epochs = 1000000;
-   double learningRate = 0.05;
+   int epochs = 10000;
+   double learningRate = 0.1;
+   int hiddenLayerLength = 3; 
+   int hiddenLayerWidth = 3;
+   int hiddenLayerHeight = 3;
 
-   // needs to be at least two 
+   // needs to be at least to 
    int layerCount = 4;
 
    // get the file from the location
@@ -27,7 +31,7 @@ int main () {
    filesystem::current_path(filesystem::path(*currentPath));
    string inputData = filesystem::current_path();
    delete currentPath;
-   inputData += "/../data/xor/xorInputData.txt";
+   inputData += "/../data/multsub1/multsub1data.txt";
    
    fstream inputs;
    inputs.open(inputData, ios::in);
@@ -82,7 +86,6 @@ int main () {
       inputCount++;
    }
 
-
    inputs.close();
 
    if (inputCount == 0) {
@@ -90,17 +93,26 @@ int main () {
       exit(1);
    }
 
-   artificialIntelligence::basicLearningTypes::generationalAIBasic::run(epochs, learningRate, inputMatrixes, outputMatrixes, inputCount, layerCount - 2);
+  
+  
 
-   // for (int i = 0; i < inputCount; i++) {
-   //    cout << "Input Matrixes " << i << ":";
-   //    inputMatrix[i].printMatrix();
-   //    cout << "Output Matrix " << i << ":";
-   //    outputMatrix[i].printMatrix();
-   // }
 
-   // Matrix3D<double>* m3d = new Matrix3D<double> (inputCount, 1, 1);
-   // m3d->randomize();
+   BasicLayerList<float>* list = new artificialIntelligence::classes::BasicLayerList<float> ();
+
+   // input layer
+   list->add (inputMatrixes[0]);
+
+   list->editRootMatrix(inputMatrixes[0]);
+   // exit (0);
+   // hidden layers
+   for (int i = 0; i < layerCount - 2; i++) {
+      list->addNew (hiddenLayerLength, hiddenLayerWidth, hiddenLayerHeight);
+   }
+   
+   // this is the output layer
+   list->addNew (outputMatrixes[0]->getLength(), outputMatrixes[0]->getWidth(), outputMatrixes[0]->getHeight());
+   
+   artificialIntelligence::basicLearningTypes::generationalAIBasic::run(list, epochs, learningRate, inputMatrixes, outputMatrixes, inputCount);
 
 
    std::chrono::duration<double> final = std::chrono::steady_clock::now() - startTime;

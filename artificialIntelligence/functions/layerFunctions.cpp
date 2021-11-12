@@ -64,8 +64,8 @@ namespace artificialIntelligence {
          }
 
          template <typename T>
-         Basic3DWeightList<T>* newWeight (BasicLayer<T>* firstLayer, BasicLayer<T>* secondLayer) {
-            return new Basic3DWeightList<T> (
+         BasicWeight<T>* newWeight (BasicLayer<T>* firstLayer, BasicLayer<T>* secondLayer) {
+            return new BasicWeight<T> (
                firstLayer->getLayerMatrix()->getLength(), 
                firstLayer->getLayerMatrix()->getWidth(),
                firstLayer->getLayerMatrix()->getHeight(),

@@ -15,20 +15,24 @@ namespace artificialIntelligence {
          private:
             Matrix3D<T>* layerMatrix;
             Matrix3D<T>* biasMatrix;
-            Basic3DWeightList<T>* weights;
+            BasicWeight<T>* weights;
             BasicLayer* next;
             BasicLayer* prev;
 
          public:
-            BasicLayer (Matrix3D<T>* layerMatrix, Matrix3D<T>* biasMatrix = nullptr, Basic3DWeightList<T>* weights = nullptr);
+            BasicLayer (Matrix3D<T>* layerMatrix, Matrix3D<T>* biasMatrix = nullptr, BasicWeight<T>* weights = nullptr);
 
             BasicLayer (int length, int width, int height);
 
             BasicLayer ();
 
+            ~BasicLayer ();
+
             int print (bool printBias = false, bool printWeights = false, int depth = 1);
 
-            BasicLayer<T>* add (Matrix3D<T>* layer, Matrix3D<T>* biasMatrix = nullptr, Basic3DWeightList<T>* weights = nullptr);
+            BasicLayer<T>* add (BasicLayer<T>* layer);
+
+            BasicLayer<T>* add (Matrix3D<T>* layer, Matrix3D<T>* biasMatrix = nullptr, BasicWeight<T>* weights = nullptr);
 
             void calculateAndUpdateAll ();
 
@@ -53,6 +57,10 @@ namespace artificialIntelligence {
             BasicLayer<T>* getNext ();
 
             BasicLayer<T>* getPrev ();
+
+            void toFile (std::ofstream* outputFile);
+            
+            static BasicLayer<T>* loadFromFile (std::ifstream* inputFile, BasicLayer<T>* prev = nullptr);
       };
    }
 }

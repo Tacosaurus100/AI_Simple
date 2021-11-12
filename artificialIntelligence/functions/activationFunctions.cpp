@@ -28,7 +28,7 @@ namespace artificialIntelligence {
             for (int l = 0; l < m3d->getLength(); l++) {
                for (int w = 0; w < m3d->getWidth(); w++) {
                   for (int h = 0; h < m3d->getHeight(); h++) {
-                     returnMatrix->insert(sigmoid (m3d->getData(l, w, h)), l, w, h);
+                     returnMatrix->insert(sigmoid (*m3d->getData(l, w, h)), l, w, h);
                   }
                }
             }
@@ -42,7 +42,7 @@ namespace artificialIntelligence {
             for (int l = 0; l < m3d->getLength(); l++) {
                for (int w = 0; w < m3d->getWidth(); w++) {
                   for (int h = 0; h < m3d->getHeight(); h++) {
-                     returnMatrix->insert(dSigmoid (m3d->getData(l, w, h)), l, w, h);
+                     returnMatrix->insert(dSigmoid (*m3d->getData(l, w, h)), l, w, h);
                   }
                }
             }
@@ -64,7 +64,7 @@ namespace artificialIntelligence {
             for (int l = 0; l < m3d->getLength(); l++) {
                for (int w = 0; w < m3d->getWidth(); w++) {
                   for (int h = 0; h < m3d->getHeight(); h++) {
-                     returnMatrix->insert(tanh (m3d->getData(l, w, h)), l, w, h);
+                     returnMatrix->insert(tanh (*m3d->getData(l, w, h)), l, w, h);
                   }
                }
             }
@@ -78,7 +78,7 @@ namespace artificialIntelligence {
             for (int l = 0; l < m3d->getLength(); l++) {
                for (int w = 0; w < m3d->getWidth(); w++) {
                   for (int h = 0; h < m3d->getHeight(); h++) {
-                     returnMatrix->insert(dTanh (m3d->getData(l, w, h)), l, w, h);
+                     returnMatrix->insert(dTanh (*m3d->getData(l, w, h)), l, w, h);
                   }
                }
             }
