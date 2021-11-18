@@ -21,8 +21,9 @@ int main () {
    string* currentPath = new string (filesystem::current_path());
    *currentPath += "/../../artificialIntelligence/neuralNetworks";
    filesystem::current_path(filesystem::path(*currentPath));
-
-   BasicLayerList<float>* list = BasicLayerList<float>::loadFromFile ((string) filesystem::current_path() + "/../data/images/mnist_png/mnistTrainedModelLargeSet1.csv");
+   std::string dataSet = (string) filesystem::current_path() + "/../data/images/mnist_png/mnistTrainedModelLargeSet4";
+   std::string csvFilePath = dataSet + ".csv";
+   BasicLayerList<float>* list = BasicLayerList<float>::loadFromFile (csvFilePath);
 
 
 
@@ -35,7 +36,7 @@ int main () {
 
    int inputCount = 0;
    for (int i = 0; i < 10; i++) {
-      inputImageFolder = (string) filesystem::current_path() + "/../data/images/mnist_png/smallSet/" + std::to_string(i) + '/';
+      inputImageFolder = (string) filesystem::current_path() + "/../data/images/mnist_png/training/" + std::to_string(i) + '/';
       // loop to go through each file
       for (const auto & entry : filesystem::directory_iterator(inputImageFolder)) {
          inputCount++;
@@ -48,14 +49,26 @@ int main () {
    // Matrix3D<char>* listOfInputs = new Matrix3D<char> []
    // loop to go through each folder
    int startOfDirectoryIndex = 0;
+   std::string type;
+   if (list->getRoot()->getLayerMatrix()->getLength() == 1) {
+      type = "BW";
+   } else if (list->getRoot()->getLayerMatrix()->getLength() == 3) {
+      type = "RGB";
+   } else if (list->getRoot()->getLayerMatrix()->getLength() == 4) {
+      type = "RGBA";
+   } else {
+      std::cout << "Invalid data set, InputMatrix equals " << inputMatrixes[0]->getLength() << "\n";
+      exit (0);
+   }
+
+   std::cout << "The current type of image being used is " << type;
    for (int i = 0; i < 10; i++) {
-      inputImageFolder = (string) filesystem::current_path() + "/../data/images/mnist_png/smallSet/" + std::to_string(i) + '/';
-      // loop to go through each file
+      inputImageFolder = (string) filesystem::current_path() + "/../data/images/mnist_png/training/" + std::to_string(i) + '/';
+      std::cout << (i * 10.0) << " percent of the images have been loaded";
       int counter = 0;
       for (const auto & entry : filesystem::directory_iterator(inputImageFolder)) {
          std::cout << entry.path() << std::endl;
-         // convImage->printMatrix();
-         inputMatrixes[startOfDirectoryIndex + counter] = images::generate::inputMatrixNormalized(entry.path(), "RGBA");
+         inputMatrixes[startOfDirectoryIndex + counter] = images::generate::inputMatrixNormalized(entry.path(), type);
          // if (counter == 3) {
          //    exit (0);
          // }
@@ -66,39 +79,54 @@ int main () {
       }
       startOfDirectoryIndex = counter + startOfDirectoryIndex;
    } 
+   std::cout << "The images have finished loading";
 
+   int correct = 0;
+   float total = 0;
    for (int i = 0; i < inputCount; i++) {
-
-      std::cout << "\n\n\n\n";
-      std::cout << "Input Matrix: ";
-      inputMatrixes[i]->printMatrix();
-      std::cout << "True Output: ";
-      outputMatrixes[i]->printMatrix();
       list->editRootMatrix(inputMatrixes[i]);
 
       // std::cout << "before";
       // list->print(true, true);
       list->calculateAndUpdateAll();
-      // std::cout << "after";
-      // list->print();
-      std::cout << "Calculated Output: ";
+      float max = 0;
+      int maxIndex = 0;
+      for (int k = 0; k < 10; k++) {
+         if (*list->getLast()->getLayerMatrix()->getData(0, 0, k) > max) {
+            maxIndex = k;
+            max = *list->getLast()->getLayerMatrix()->getData(0, 0, k);
+         }
+      }
+
+      int outputIndex = 0;
+      for (int k = 0; k < 10; k++) {
+         if (*outputMatrixes[i]->getData(0, 0, k) > 0.5) {
+            outputIndex = k;
+            break;
+         }
+      }
+      if (outputIndex == maxIndex) {
+         correct++;
+      } 
+      total++;
       list->getLast()->getLayerMatrix()->printMatrix();
-      std::cout << "\n\n";
+      outputMatrixes[i]->printMatrix();
+      std::cout << "Error = " << correct / total * 100 << "%\n\n";
    }
 
 
-   std::cout << std::setprecision(4);
-   double sumFinal = 0;
-   for (int i = 0; i < inputCount; i++) {
-      list->editRootMatrix(inputMatrixes[i]);
-      list->calculateAndUpdateAll();
-      Matrix3D<float>* error = *outputMatrixes[i] - list->getLast()->getLayerMatrix();
-      Matrix3D<float>* squared = *error * error;
-      sumFinal += squared->sum() * 100;
-      delete error;
-      delete squared;
-   }
-   std::cout << "Total final error :: " << sumFinal << "%\n";
+   // std::cout << std::setprecision(4);
+   // double sumFinal = 0;
+   // for (int i = 0; i < inputCount; i++) {
+   //    list->editRootMatrix(inputMatrixes[i]);
+   //    list->calculateAndUpdateAll();
+   //    Matrix3D<float>* error = *outputMatrixes[i] - list->getLast()->getLayerMatrix();
+   //    Matrix3D<float>* squared = *error * error;
+   //    sumFinal += squared->sum() * 100;
+   //    delete error;
+   //    delete squared;
+   // }
+   // std::cout << "Total final error :: " << sumFinal << "%\n";
 
 
    std::chrono::duration<double> final = std::chrono::steady_clock::now() - startTime;
@@ -106,5 +134,5 @@ int main () {
    std::cout << "\nTime to Complete: " << std::fixed << final.count() << "s\n";
    struct rusage usage;
    getrusage (RUSAGE_SELF, &usage);
-   std::cout << "\nMemory used (MB): " << usage.ru_maxrss / 1000 << "\n\n";
+   std::cout << "\nMemory used (MB): " << usage.ru_maxrss / 1000000 << "\n\n";
 }

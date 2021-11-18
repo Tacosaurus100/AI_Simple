@@ -18,7 +18,10 @@ namespace artificialIntelligence {
                Geometry dimensions = image.size();
                
                Matrix3D<float>* m3d;
-               if (type == "RGB") {
+               if (type == "BW") {
+                  m3d = new Matrix3D<float>(1, dimensions.width(), dimensions.height());
+               }
+               else if (type == "RGB") {
                   m3d = new Matrix3D<float>(3, dimensions.width(), dimensions.height());
                }
                else {
@@ -32,10 +35,12 @@ namespace artificialIntelligence {
                      float b = c.quantumBlue() / QuantumRange;
                      float a = c.quantumAlpha() / QuantumRange;
                      m3d->insert(r, 0, i, j);
-                     m3d->insert(g, 1, i, j);
-                     m3d->insert(b, 2, i, j);
-                     if (type == "RGBA") {
-                        m3d->insert(a, 3, i, j);
+                     if (type != "BW") {
+                        m3d->insert(g, 1, i, j);
+                        m3d->insert(b, 2, i, j);
+                        if (type != "RGB") {
+                           m3d->insert(a, 3, i, j);
+                        }
                      }
                   }
                }

@@ -45,8 +45,8 @@ namespace artificialIntelligence {
                delete error;
                delete squared;
             }
-            std::cout << "Total initial error :: " << sumInitial << "%";
-
+            std::cout << "Total initial error :: " << sumInitial << "%\n\n";
+            
             int* order = new int[inputCount];
             for (int i = 0; i < inputCount; i++) {
                order[i] = i;
@@ -63,7 +63,20 @@ namespace artificialIntelligence {
                sort::shuffle(order, inputCount);
 
                if (e % (epochs / 1000) == 0) {
-                  std::cout << "\n" << e / (double) epochs * 100 << "%";
+                  std::cout << e / (double) epochs * 100 << "%\n";
+
+                  float currentError = 0;
+                  for (int i = 0; i < inputCount; i++) {
+                     list->editRootMatrix(inputDataMatrixes[i]);
+                     list->calculateAndUpdateAll();
+                     Matrix3D<float>* error = *outputDataMatrixes[i] - list->getLast()->getLayerMatrix();
+                     Matrix3D<float>* squared = *error * error;
+                     currentError += squared->sum() * 100;
+                     delete error;
+                     delete squared;
+                  }
+                  std::cout << "Total error :: " << currentError << "%\n\n";
+
                   // std::cout << std::setprecision(4);
                   // double sum = 0;
                   // for (int i = 0; i < inputCount; i++) {
