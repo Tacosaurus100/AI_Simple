@@ -178,7 +178,7 @@ bool Board::isValidMove (Piece* piece, std::string pos, bool check) {
    } else if (piece->name == "queen") {
       val = checkDiagonal (first, second) || checkStraight (first, second);
    } else if (piece->name == "king") {
-      val = checkKing (piece, pos);
+      val = checkKing (piece, pos);   
    }
    delete[] first;
    delete[] second;
@@ -195,8 +195,11 @@ bool Board::checkPawnForward (Piece* piece, std::string pos) {
    bool val = false;
 
    if (!piece->moved) { 
-      if (((first[0] == second[0] && first[1] + 1 * multiplier == second[1]) || 
-         (first[0] == second[0] && first[1] + 2 * multiplier == second[1])) && 
+      if ((first[0] == second[0] && first[1] + 1 * multiplier == second[1]) && 
+         (this->getSquare(first[0], first[1] + 1 * multiplier)->GetChildren().size() == 0)) {
+            val = true;
+         }
+      else if ((first[0] == second[0] && first[1] + 2 * multiplier == second[1]) && 
          (this->getSquare(first[0], first[1] + 1 * multiplier)->GetChildren().size() == 0 && 
          this->getSquare(first[0], first[1] + 2 * multiplier)->GetChildren().size() == 0)) {
             val = true;
@@ -363,6 +366,7 @@ bool Board::checkKing (Piece* piece, std::string pos) {
    int* first = Square::parsePos(piece->position);
    int* second = Square::parsePos(pos);
    bool val = false;
+   Piece* active = this->activePiece;
    if (this->getSquare(second[0], second[1])->GetChildren().size() != 0 &&
       ((Piece*) this->getSquare(second[0], second[1])->GetChildren().front())->isWhite == piece->isWhite) {
          val = false;
@@ -398,14 +402,15 @@ bool Board::checkKing (Piece* piece, std::string pos) {
             }
             int* arr = Square::parsePos(check);
             if (checkStraight (first, arr)) {
-               if (!rook->moved) {
-                  if (!causesCheck (pb->pieces[15], rookPlacement) && !causesCheck (pb->pieces[15], pos)) {
+               if (rook != nullptr && !rook->moved) {
+
+                  std::cout << "straight\n";
+                  if (!causesCheck (piece, rookPlacement) && !causesCheck (piece, pos)) {
                      std::cout << "O-O-O ";
                      if (isWhitesTurn) {
                         std::cout << '\n';
                      }
                      confirmMove (rook, rookPlacement);
-                     confirmMove (piece, pos);
                      isWhitesTurn = !isWhitesTurn;
                      unhighlight();
                      val = true;
@@ -430,14 +435,13 @@ bool Board::checkKing (Piece* piece, std::string pos) {
 
             int* arr = Square::parsePos(check);
             if (checkStraight (first, arr)) {
-               if (!rook->moved) {
+               if (rook != nullptr && !rook->moved) {
                   if (!causesCheck (piece, rookPlacement) && !causesCheck (piece, pos)) {
                      std::cout << "O-O ";
                      if (isWhitesTurn) {
                         std::cout << '\n';
                      }
                      confirmMove (rook, rookPlacement);
-                     confirmMove (piece, pos);
                      isWhitesTurn = !isWhitesTurn;
                      val = true;
                   }
@@ -447,7 +451,7 @@ bool Board::checkKing (Piece* piece, std::string pos) {
          }
       }
    }
-
+   this->activePiece = active;
    delete[] first;
    delete[] second;
    return val;
