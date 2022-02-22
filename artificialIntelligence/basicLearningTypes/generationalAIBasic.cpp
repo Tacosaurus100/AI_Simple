@@ -30,28 +30,31 @@ using namespace std;
 namespace artificialIntelligence {
    namespace basicLearningTypes {
       namespace generationalAIBasic {
-         static void run (BasicLayerList<float>* list, int epochs, double learningRate, Matrix3D<float>** inputDataMatrixes, Matrix3D<float>** outputDataMatrixes, int inputCount, bool print = false) {
+         static void run (BasicLayerList<float>* list, int epochs, double learningRate, Matrix3D<float>** inputDataMatrixes, Matrix3D<float>** outputDataMatrixes, int inputCount, bool calculateError = false, bool print = false) {
 
             // initial error
 
             std::cout << std::setprecision(4);
+
             double sumInitial = 0;
-            for (int i = 0; i < inputCount; i++) {
-               list->editRootMatrix(inputDataMatrixes[i]);
-               list->calculateAndUpdateAll();
-               Matrix3D<float>* error = *outputDataMatrixes[i] - list->getLast()->getLayerMatrix();
-               Matrix3D<float>* squared = *error * error;
-               sumInitial += squared->sum() * 100;
-               delete error;
-               delete squared;
+            if (calculateError) {
+               for (int i = 0; i < inputCount; i++) {
+                  list->editRootMatrix(inputDataMatrixes[i]);
+                  list->calculateAndUpdateAll();
+                  Matrix3D<float>* error = *outputDataMatrixes[i] - list->getLast()->getLayerMatrix();
+                  Matrix3D<float>* squared = *error * error;
+                  sumInitial += squared->sum() * 100;
+                  delete error;
+                  delete squared;
+               }
+               std::cout << "Total initial error :: " << sumInitial << "%\n\n";
             }
-            std::cout << "Total initial error :: " << sumInitial << "%\n\n";
             
             int* order = new int[inputCount];
             for (int i = 0; i < inputCount; i++) {
                order[i] = i;
             }
-
+   
             // main loop
 
             std::cout << std::fixed;
@@ -61,10 +64,10 @@ namespace artificialIntelligence {
                // because stochastic gradient descent, the order needs randomization
 
                sort::shuffle(order, inputCount);
-
-               if (e % (epochs / 1000) == 0) {
-                  std::cout << e / (double) epochs * 100 << "%\n";
-
+               
+               std::cout << e / (double) epochs * 100 << "%\n";
+                
+               if (calculateError) {
                   float currentError = 0;
                   for (int i = 0; i < inputCount; i++) {
                      list->editRootMatrix(inputDataMatrixes[i]);
@@ -76,25 +79,24 @@ namespace artificialIntelligence {
                      delete squared;
                   }
                   std::cout << "Total error :: " << currentError << "%\n\n";
-
-                  // std::cout << std::setprecision(4);
-                  // double sum = 0;
-                  // for (int i = 0; i < inputCount; i++) {
-                  //    list->editRootMatrix(inputDataMatrixes[i]);
-                  //    list->calculateAndUpdateAll();
-                     
-                  //    // (*outputDataMatrixes[i] -list->getLast()->getLayerMatrix())->printMatrix();
-                  //    // exit (0);
-                  //    std::cout << *outputDataMatrixes[i]->getData(0, 0, 0) << " :: " << *list->getLast()->getLayerMatrix()->getData(0, 0, 0) << " :: " << (*outputDataMatrixes[i] - list->getLast()->getLayerMatrix())->sum() * 100;
-                  //    sum += (*outputDataMatrixes[i] - list->getLast()->getLayerMatrix())->sum() * 100 > 0 ? (*outputDataMatrixes[i] - list->getLast()->getLayerMatrix())->sum() * 100 : (*outputDataMatrixes[i] - list->getLast()->getLayerMatrix())->sum() * 100 * -1;
-                  //    std::cout << "%" << " error\n";
-                  //    // list->getLast()->getLayerMatrix()->printMatrix();
-                  // }
-                  // std::cout << "Total error :: " << sum << "%";
-                  // std::cout << std::setprecision(2);
-                  // list->print(true, true);
-                  // std::cout << "\n\n";
                }
+               // std::cout << std::setprecision(4);
+               // double sum = 0;
+               // for (int i = 0; i < inputCount; i++) {
+               //    list->editRootMatrix(inputDataMatrixes[i]);
+               //    list->calculateAndUpdateAll();
+                  
+               //    // (*outputDataMatrixes[i] -list->getLast()->getLayerMatrix())->printMatrix();
+               //    // exit (0);
+               //    std::cout << *outputDataMatrixes[i]->getData(0, 0, 0) << " :: " << *list->getLast()->getLayerMatrix()->getData(0, 0, 0) << " :: " << (*outputDataMatrixes[i] - list->getLast()->getLayerMatrix())->sum() * 100;
+               //    sum += (*outputDataMatrixes[i] - list->getLast()->getLayerMatrix())->sum() * 100 > 0 ? (*outputDataMatrixes[i] - list->getLast()->getLayerMatrix())->sum() * 100 : (*outputDataMatrixes[i] - list->getLast()->getLayerMatrix())->sum() * 100 * -1;
+               //    std::cout << "%" << " error\n";
+               //    // list->getLast()->getLayerMatrix()->printMatrix();
+               // }
+               // std::cout << "Total error :: " << sum << "%";
+               // std::cout << std::setprecision(2);
+               // list->print(true, true);
+               // std::cout << "\n\n";
 
                // debug::printArr(order, inputCount);
                // for (int i = 0; i < inputCount; i++) {
@@ -122,7 +124,7 @@ namespace artificialIntelligence {
 
                   delete error;
                   delete dSig;
-                  
+
                   deltaPrev->setMatrix(deltaNext);
 
                   // calculate and set the bias
@@ -167,10 +169,12 @@ namespace artificialIntelligence {
                      // <--> //
 
                      // calculate the bias for this node
-                     Matrix3D<float>* bias = *deltaNext * learningRate; 
-                     // currentLayer->getBias()->printMatrix();
-                     // deltaNext->printMatrix();
+                     Matrix3D<float>* bias = *deltaPrev * learningRate; 
 
+                     // currentLayer->getBias()->printMatrix();
+                     // bias->printMatrix();
+
+                  // exit(0);
                      currentLayer->setBiasMatrix(bias);
                      delete bias;
 
@@ -249,9 +253,12 @@ namespace artificialIntelligence {
             }
             struct rusage usage;
             getrusage (RUSAGE_SELF, &usage);
-            std::cout << "\nMemory used (MB): " << usage.ru_maxrss / 1000 << "\n\n";
+            std::cout << "\nMemory used (MB): " << usage.ru_maxrss / 1000000 << "\n\n";
 
-            list->print(true, true);
+            if (print) {
+               list->print(true, true);
+            }
+            // outputDataMatrixes[0]->printMatrix();
 
             // output results
             if (print) {
@@ -276,18 +283,20 @@ namespace artificialIntelligence {
 
             // final error
             std::cout << std::setprecision(4);
-            double sumFinal = 0;
-            for (int i = 0; i < inputCount; i++) {
-               list->editRootMatrix(inputDataMatrixes[i]);
-               list->calculateAndUpdateAll();
-               Matrix3D<float>* error = *outputDataMatrixes[i] - list->getLast()->getLayerMatrix();
-               Matrix3D<float>* squared = *error * error;
-               sumFinal += squared->sum() * 100;
-               delete error;
-               delete squared;
+            if (calculateError) {
+               double sumFinal = 0;
+               for (int i = 0; i < inputCount; i++) {
+                  list->editRootMatrix(inputDataMatrixes[i]);
+                  list->calculateAndUpdateAll();
+                  Matrix3D<float>* error = *outputDataMatrixes[i] - list->getLast()->getLayerMatrix();
+                  Matrix3D<float>* squared = *error * error;
+                  sumFinal += squared->sum() * 100;
+                  delete error;
+                  delete squared;
+               }
+               std::cout << "Total initial error :: " << sumInitial << "%\n";
+               std::cout << "Total final error :: " << sumFinal << "%\n";
             }
-            std::cout << "Total initial error :: " << sumInitial << "%\n";
-            std::cout << "Total final error :: " << sumFinal << "%\n";
 
             delete[] order;
          }

@@ -397,7 +397,7 @@ BasicLayer<T>* BasicLayer<T>::loadFromFile (std::ifstream* inputFile, BasicLayer
       for (int j = 0; j < layer->biasMatrix->getWidth(); j++) {
          for (int k = 0; k < layer->biasMatrix->getHeight(); k++) {
             std::getline(lineStream, value, ',');
-            layer->biasMatrix->insert (stof(value), i, j, k);
+            layer->biasMatrix->insert (stod(value), i, j, k);
          }
       }
    }
@@ -431,7 +431,7 @@ BasicLayer<T>* BasicLayer<T>::loadFromFile (std::ifstream* inputFile, BasicLayer
                for (int w2 = 0; w2 < biasWidth; w2++) {
                   for (int h2 = 0; h2 < biasHeight; h2++) {
                      std::getline(lineStream, value, ',');
-                     weights->insert(stof(value), l, w, h, l2, w2, h2);
+                     weights->insert(stod(value), l, w, h, l2, w2, h2);
                   }
                }
             }

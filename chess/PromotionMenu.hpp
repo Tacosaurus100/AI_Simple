@@ -21,7 +21,8 @@ namespace chess {
    class PromotionMenu : public wxFrame{
       public:
          PromotionMenu(const wxString& title, const wxPoint& pos, const wxSize& size);
-
+         PromotionMenu();
+         
          Square*** squares;
          static void init (PromotionMenu* frame);
 

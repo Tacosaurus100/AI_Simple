@@ -116,9 +116,11 @@ void BasicLayerList<T>::toFile (std::string filepath) {
 template <typename T>
 BasicLayerList<T>* BasicLayerList<T>::loadFromFile (std::string filepath) {
    BasicLayerList<T>* list = new BasicLayerList<T>();
-   ifstream inputFile;
-   inputFile.open (filepath);
-   list->root = BasicLayer<float>::loadFromFile(&inputFile);
+   ifstream inputFile (filepath);
+   if (inputFile.good() == false) {
+      return nullptr;
+   }
+   list->root = BasicLayer<T>::loadFromFile(&inputFile);
    list->last = list->root->getLast();
    inputFile.close();
    return list;

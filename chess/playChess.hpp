@@ -1,10 +1,9 @@
-#ifndef __HELLO_HPP
-#define __HELLO_HPP
-
+#ifndef PLAYCHESS_HPP
+#define PLAYCHESS_HPP
 
 class PlayChess : public wxApp {
-public:
-    virtual bool OnInit();
+   public:
+      void onClick ();
 };
 DECLARE_APP(PlayChess)
 

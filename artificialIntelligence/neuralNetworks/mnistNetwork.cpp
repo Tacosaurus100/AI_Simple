@@ -1,5 +1,6 @@
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <fstream>
 
 #include <artificialIntelligence/functions/images/generateInput.cpp>
 #include <artificialIntelligence/basicLearningTypes/generationalAIBasic.cpp>
@@ -11,10 +12,33 @@ using namespace std;
 using namespace artificialIntelligence::functions;
 using namespace coreutils::classes::matrixes;
 
-int main () {
+int main (int argc, char *argv[]) {
    std::chrono::time_point<std::chrono::steady_clock> startTime = std::chrono::steady_clock::now();
    std::cout << std::fixed;
    std::cout << std::setprecision(2);
+
+   int flags, opt;
+    int nsecs, tfnd;
+
+   nsecs = 0;
+   tfnd = 0;
+   flags = 0;
+   while ((opt = getopt(argc, argv, "nt:")) != -1) {
+      switch (opt) {
+      case 'n':
+         flags = 1;
+         break;
+      case 't':
+         nsecs = atoi(optarg);
+         tfnd = 1;
+         break;
+      default: /* '?' */
+         fprintf(stderr, "Usage: %s [-t nsecs] [-n] name\n",argv[0]);
+         exit(EXIT_FAILURE);
+      }
+    }
+
+
 
    int epochs = 15;
    double learningRate = 0.02;
@@ -31,10 +55,10 @@ int main () {
 
    string inputImageFolder;
    delete currentPath;
-
+   std::string map[] = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
    int inputCount = 0;
    for (int i = 0; i < 10; i++) {
-      inputImageFolder = (string) filesystem::current_path() + "/../data/images/mnist_png/training/" + std::to_string(i) + '/';
+      inputImageFolder = (string) filesystem::current_path() + "/../data/images/mnist_png/smallSet/" + map[i] + '/';
       // loop to go through each file
       for (const auto & entry : filesystem::directory_iterator(inputImageFolder)) {
          inputCount++;
@@ -50,7 +74,7 @@ int main () {
    std::string type = "BW";
    std::cout << "The current type of image being used is " << type << '\n';
    for (int i = 0; i < 10; i++) {
-      inputImageFolder = (string) filesystem::current_path() + "/../data/images/mnist_png/training/" + std::to_string(i) + '/';
+      inputImageFolder = (string) filesystem::current_path() + "/../data/images/mnist_png/smallSet/" + map[i] + '/';
       std::cout << (i * 10.0) << " percent of the images have been loaded\n";
       int counter = 0;
       for (const auto & entry : filesystem::directory_iterator(inputImageFolder)) {
@@ -80,10 +104,10 @@ int main () {
    for (int i = 0; i < layerCount - 2; i++) {
       list->addNew (hiddenLayerLength, hiddenLayerWidth, hiddenLayerHeight);
    }
-   
+
    // this is the output layer
    list->addNew (outputMatrixes[0]->getLength(), outputMatrixes[0]->getWidth(), outputMatrixes[0]->getHeight());
-
+   
    artificialIntelligence::basicLearningTypes::generationalAIBasic::run(list, epochs, learningRate, inputMatrixes, outputMatrixes, inputCount);
 
    list->toFile ((string) filesystem::current_path() + "/../data/images/mnist_png/mnistTrainedModelLargeSet4.csv");

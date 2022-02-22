@@ -9,20 +9,15 @@ namespace coreutils
    namespace functions
    {
       namespace sort {
-         // uses insertionSort to sort
          template<typename T>
-         void insertionSort (T* arrayPtr, int size);
-
-         // uses mergeSort to sort
-         template<typename T>
-         void merge(T *Arr, int start, int mid, int end);
-
-         template<typename T>
-         void insertionSort (T* arrayPtr, int size){
+         int* insertionSort (T* arrayPtr, int size){
             int smallestIndex;
             int index;
             int index2;
-
+            int* order = new int[size];
+            for (int i = 0; i < size; i++) {
+               order[i] = i;
+            }
             for (int i = 0; i < size; i++) {
                smallestIndex = i;
                for (int j = i + 1; j < size; j++) {
@@ -30,8 +25,10 @@ namespace coreutils
                      smallestIndex = j;
                   }
                }
-               swap (&arrayPtr [i], &arrayPtr [smallestIndex]);
+               sort::swap(&arrayPtr [i], &arrayPtr [smallestIndex]);
+               sort::swap(&order[i], &order[smallestIndex]);
             }
+            return order;
          }
 
          template<typename T>

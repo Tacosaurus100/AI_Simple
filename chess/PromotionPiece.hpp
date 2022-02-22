@@ -12,7 +12,9 @@ using namespace std;
 namespace chess {
    class PromotionPiece : public wxStaticBitmap{
       public: 
-         PromotionPiece(wxBitmap* bitmap, wxWindow* parent, int id, const std::string position, const bool isWhite, const std::string name);
+         PromotionPiece(wxBitmap* bitmap, wxWindow* parent, int id, const bool isWhite, const std::string name);
+
+         PromotionPiece(const bool isWhite, const std::string name);
 
          void onClick();
          

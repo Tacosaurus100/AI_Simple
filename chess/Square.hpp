@@ -13,12 +13,16 @@ namespace chess {
    class Square : public wxPanel{
       public: 
          Square(wxWindow* parent, int id, const wxPoint& pos, const wxSize& size, std::string position);
+         Square(std::string position);
 
          void onClick();
+         void clickNoGUI(wxWindow* board);
 
          static int* parsePos (std::string pos,  bool promotional = false);
 
          static Square* getSquare (Square*** squares, std::string pos, bool promotional = false);
+
+         void destroy();
 
          std::string position;
    };

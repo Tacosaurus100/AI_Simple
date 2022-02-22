@@ -15,6 +15,11 @@ Square::Square(wxWindow* parent, int id, const wxPoint& pos, const wxSize& size,
 {
    this->position = position;
    Connect(id, wxEVT_LEFT_DOWN, (wxObjectEventFunction) &Square::onClick);
+   Connect(id, wxEVT_THREAD, (wxObjectEventFunction) &Square::onClick);
+}
+
+Square::Square(std::string position) {
+   this->position = position;
 }
 
 int* Square::parsePos (std::string pos, bool promotional) {
@@ -37,8 +42,28 @@ Square* Square::getSquare (Square*** squares, std::string pos, bool promotional)
 }
 
 void Square::onClick() {
+   // std::cout << "square clicked\n";
    Board* board = (Board*) (GetParent());
    board->moveHelper(this->position);
+}
+
+void Square::clickNoGUI(wxWindow* board) {
+   ((Board*) board)->moveHelper(this->position);
+}
+
+void Square::destroy() {
+   std::cout << "is main destroy " << wxThread::IsMain () << '\n';
+   if (wxThread::IsMain ()) {
+      this->DestroyChildren();
+   } else {
+      wxThreadEvent evt( wxEVT_CHECKBOX, this->GetId());
+      wxTheApp->QueueEvent (evt.Clone()); 
+      std::this_thread::sleep_for (std::chrono::microseconds(250000)); 
+      if (wxTheApp->HasPendingEvents()) { 
+         wxTheApp->ProcessPendingEvents();
+      }
+      std::this_thread::sleep_for (std::chrono::microseconds(250000));
+   }
 }
 
 #endif

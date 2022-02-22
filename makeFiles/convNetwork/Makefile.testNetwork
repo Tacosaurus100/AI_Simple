@@ -1,0 +1,18 @@
+# Makefile
+CC=g++
+CFLAGS=-O2 -I ../../ -std=c++2a -ferror-limit=100 `Magick++-config --cxxflags --cppflags` `Magick++-config --ldflags --libs`
+
+all: testNetwork
+
+clean:
+	rm -rf testNetwork
+
+ODIR=obj
+
+_OBJ = xor.o
+OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+
+testNetwork: 
+	$(CC) -o $@ ../../artificialIntelligence/neuralNetworks/testMnistNetwork.cpp $(CFLAGS)
+
+.PHONY: clean

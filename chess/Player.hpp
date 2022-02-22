@@ -18,7 +18,8 @@ namespace chess {
 
          Piece** pieces;
 
-         void removePiece (std::string pos);
+         bool removePiece (std::string pos);
+         std::string piecesThatExist ();
       private:
 
    };

@@ -13,19 +13,19 @@ namespace artificialIntelligence {
    namespace functions {
       namespace images {
          namespace generate {
-            Matrix3D<float>* inputMatrixNormalized (std::string filepath, std::string type) {
+            template <typename T>
+            void inputMatrixNormalized (std::string filepath, Matrix3D<T>* m3d, std::string type) {
                Image image(filepath);
                Geometry dimensions = image.size();
-               
-               Matrix3D<float>* m3d;
+         
                if (type == "BW") {
-                  m3d = new Matrix3D<float>(1, dimensions.width(), dimensions.height());
+                  m3d = new Matrix3D<T>(1, dimensions.width(), dimensions.height());
                }
                else if (type == "RGB") {
-                  m3d = new Matrix3D<float>(3, dimensions.width(), dimensions.height());
+                  m3d = new Matrix3D<T>(3, dimensions.width(), dimensions.height());
                }
                else {
-                  m3d = new Matrix3D<float>(4, dimensions.width(), dimensions.height());
+                  m3d = new Matrix3D<T>(4, dimensions.width(), dimensions.height());
                }
                for (int i = 0; i < dimensions.width(); i++) {
                   for (int j = 0; j < dimensions.height(); j++) {
@@ -44,7 +44,6 @@ namespace artificialIntelligence {
                      }
                   }
                }
-               return m3d;
             }
          }
       }
